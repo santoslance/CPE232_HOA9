@@ -1,0 +1,32 @@
+---
+- name: Install required packages for Prometheus on CentOS
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - wget
+    - tar
+
+- name: Download Prometheus tarball for CentOS
+  get_url:
+    url: "https://github.com/prometheus/prometheus/releases/download/v2.31.1/prometheus-2.31.1.linux-amd64.tar.gz"
+    dest: /tmp/prometheus.tar.gz
+
+- name: Create Prometheus directories for CentOS
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: prometheus
+    group: prometheus
+  loop:
+    - /etc/prometheus
+    - /var/lib/prometheus
+
+- name: Copy Prometheus configuration file for CentOS
+  copy:
+    src: prometheus_install.yml
+    dest: /etc/prometheus/prometheus.yml
+    owner: prometheus
+    group: prometheus
+    mode: '0644'
+
